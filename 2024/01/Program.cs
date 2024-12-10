@@ -1,4 +1,7 @@
-﻿// Check/Read file inputs //
+﻿using TextCopy;
+
+// CHECK & READ FILE INPUTS //
+
 if (!File.Exists("../../../input.txt"))
 {
     Console.Write("Please ensure that the correct input file named \"input.txt\" is in the same directory as Program.cs!");
@@ -8,7 +11,8 @@ if (!File.Exists("../../../input.txt"))
 
 var input = File.ReadAllLines("../../../input.txt");
 
-// Main logic //
+// MAIN LOGIC //
+
 int[] left = new int[input.Length];
 int[] right = new int[input.Length];
 
@@ -29,6 +33,7 @@ for (var i = 0; i < input.Length; i++)
     sum += Math.Abs(sortedRight.ElementAt(i) - sortedLeft.ElementAt(i));
 }
 
-// Print result //
+// PRINT & COPY RESULTS //
 
 Console.WriteLine(sum);
+await ClipboardService.SetTextAsync(sum.ToString());
