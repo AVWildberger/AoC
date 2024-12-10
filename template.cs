@@ -2,18 +2,19 @@ using TextCopy; //Using NuGet Package TextCopy (https://github.com/CopyText/Text
 
 // CONFIG //
 
-const Copy COPY = Copy.NONE;
+const Copy COPY = Copy.STAR_ONE;
+const string FILE = "../../../input.txt";
 
 // CHECK & READ FILE INPUTS //
 
-if (!File.Exists("../../../input.txt"))
+if (!File.Exists(FILE))
 {
-    Console.Write("Please ensure that the correct input file named \"input.txt\" is in the same directory as Program.cs!");
+    Console.Write($"Please ensure that the correct input file named \"{FILE.Split('/').Last()}\" is in the same directory as Program.cs!");
     Console.ReadKey(true);
     return;
 }
 
-var input = File.ReadAllLines("../../../input.txt");
+var input = File.ReadAllLines(FILE);
 
 // MAIN LOGIC //
 
@@ -35,16 +36,16 @@ switch (COPY)
         break;
 };
 
-
+// Methods //
 
 static int Star1(string[] input)
 {
-    throw new NotImplementedException();
+    return 0;
 }
 
 static int Star2(string[] input)
 {
-    throw new NotImplementedException();
+    return 0;
 }
 
 enum Copy
