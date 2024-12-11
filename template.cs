@@ -36,7 +36,7 @@ switch (COPY)
         break;
 };
 
-// Methods //
+// STARS //
 
 static int Star1(string[] input)
 {
@@ -47,6 +47,8 @@ static int Star2(string[] input)
 {
     return 0;
 }
+
+// UTIL //
 
 enum Copy
 {
