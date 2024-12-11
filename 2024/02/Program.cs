@@ -2,7 +2,7 @@
 
 // CONFIG //
 
-const Copy COPY = Copy.STAR_ONE;
+const Copy COPY = Copy.STAR_TWO;
 const string FILE = "../../../input.txt";
 
 // CHECK & READ FILE INPUTS //
@@ -36,7 +36,7 @@ switch (COPY)
         break;
 };
 
-
+// STARS //
 
 static int Star1(string[] input)
 {
@@ -44,42 +44,9 @@ static int Star1(string[] input)
 
     foreach (var line in input)
     {
-        //split line
         var arr = line.Split(' ').Select(x => int.Parse(x)).ToArray();
 
-        //check if line violates rule
-        bool ruleViolated = false;
-        bool ascending = true;
-
-        for (int i = 0; i < arr.Length - 1; i++)
-        {
-            if (!ruleViolated)
-            {
-                int diff = arr[i + 1] - arr[i];
-
-                if (i == 0 && diff < 0)
-                {
-                    ascending = false;
-                }
-
-                if (ascending)
-                {
-                    if (diff < 1 || diff > 3)
-                    {
-                        ruleViolated = true;
-                    }
-                }
-                else
-                {
-                    if (diff < -3 || diff > -1)
-                    {
-                        ruleViolated = true;
-                    }
-                }
-            }
-        }
-
-        if (!ruleViolated) safeReports++;
+        if (CheckLine(arr)) safeReports++;
     }
 
     return safeReports;
@@ -87,7 +54,70 @@ static int Star1(string[] input)
 
 static int Star2(string[] input)
 {
-    return 0;
+    int safeReports = 0;
+
+    foreach (var line in input)
+    {
+        var arr = line.Split(' ').Select(x => int.Parse(x)).ToArray();
+
+        //check without removing
+        bool isSafe = CheckLine(arr);
+
+        if (!isSafe)
+        {
+            for (int i = 0; i < arr.Length; i++)
+            {
+                //remove element
+                var list = arr.ToList();
+                list.RemoveAt(i);
+                var newArr = list.ToArray();
+
+                if (CheckLine(newArr)) isSafe = true;
+            }
+        }
+
+        if (isSafe) safeReports++;
+    }
+
+    return safeReports;
+}
+
+// UTIL //
+
+static bool CheckLine(int[] arr)
+{   
+    bool ruleViolated = false;
+    bool ascending = true;
+
+    for (int i = 0; i < arr.Length - 1; i++)
+    {
+        if (!ruleViolated)
+        {
+            int diff = arr[i + 1] - arr[i];
+
+            if (i == 0 && diff < 0)
+            {
+                ascending = false;
+            }
+
+            if (ascending)
+            {
+                if (diff < 1 || diff > 3)
+                {
+                    ruleViolated = true;
+                }
+            }
+            else
+            {
+                if (diff < -3 || diff > -1)
+                {
+                    ruleViolated = true;
+                }
+            }
+        }
+    }
+
+    return !ruleViolated;
 }
 
 enum Copy
