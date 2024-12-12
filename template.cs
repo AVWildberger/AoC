@@ -55,4 +55,4 @@ enum Copy
     NONE,
     STAR_ONE,
     STAR_TWO
-}
+};
