@@ -2,7 +2,7 @@
 
 // CONFIG //
 
-const Copy COPY = Copy.STAR_ONE;
+const Copy COPY = Copy.STAR_TWO;
 const string FILE = "../../../input.txt";
 
 // CHECK & READ FILE INPUTS //
@@ -48,7 +48,7 @@ static int Star1(string[] input)
         {
             if (input[line][c] == 'X')
             {
-                occurance += CheckDirections(input, line, c);
+                occurance += CheckDirectionsStar1(input, line, c);
             }
         }
     }
@@ -58,12 +58,25 @@ static int Star1(string[] input)
 
 static int Star2(string[] input)
 {
-    return 0;
+    int occurance = 0;
+
+    for (int line = 0; line < input.Length; line++)
+    {
+        for (int c = 0; c < input[line].Length; c++)
+        {
+            if (input[line][c] == 'A')
+            {
+                occurance += CheckDirectionsStar2(input, line, c);
+            }
+        }
+    }
+
+    return occurance;
 }
 
 // UTIL //
 
-static int CheckDirections(string[] field, int line, int ch)
+static int CheckDirectionsStar1(string[] field, int line, int c)
 {
     string word = "MAS";
     int len = word.Length;
@@ -84,19 +97,38 @@ static int CheckDirections(string[] field, int line, int ch)
     foreach (var v in vectors)
     {
         if (line + v.row * len >= 0 && line + v.row * len < field.Length &&
-              ch + v.col * len >= 0 &&   ch + v.col * len < field[line].Length)
+              c + v.col * len >= 0 &&   c + v.col * len < field[line].Length)
         {
             bool correct = true;
 
             for (int i = 1; i <= len; i++)
             {
-                if (field[line + v.row * i][ch + v.col * i] != word[i - 1])
+                if (field[line + v.row * i][c + v.col * i] != word[i - 1])
                 {
                     correct = false;
                 }
             }
 
             if (correct) occurance++;
+        }
+    }
+
+    return occurance;
+}
+
+static int CheckDirectionsStar2(string[] field, int line, int c)
+{
+    int occurance = 0;
+
+    if (line - 1 >= 0 && line + 1 < field.Length &&
+        c - 1 >= 0 && c + 1 < field[line].Length)
+    {
+        string s1 = $"{field[line - 1][c - 1]}{field[line + 1][c + 1]}";
+        string s2 = $"{field[line - 1][c + 1]}{field[line + 1][c - 1]}";
+
+        if ((s1 == "SM" || s1 == "MS") && (s2 == "SM" || s2 == "MS"))
+        {
+            occurance++;
         }
     }
 
