@@ -41,9 +41,51 @@ switch (COPY)
 
 static int Star1(string[] input)
 {
+    CheckField(input, out int visits);
+
+    return visits;
+}
+
+static int Star2(string[] input)
+{
+    int options = 0;
+
+    for (int row = 0; row < input.Length; row++)
+    {
+        for (int col = 0; col < input[0].Length; col++)
+        {
+            if (input[row][col] == '.')
+            {
+                string[] newField = (string[])input.Clone();
+
+                string first = input[row].Substring(0, col);
+                char second = '#';
+                string third = input[row].Substring(col + 1, input[row].Length - first.Length - 1);
+                newField[row] = first + second + third;
+
+                Console.WriteLine("Alt: " + input[row]);
+                Console.WriteLine("Neu: " + newField[row]);
+
+                bool isEnding = CheckField(newField, out _);
+                if (!isEnding)
+                {
+                    options++;
+                }
+            }
+        }
+    }
+
+    return options;
+}
+
+// UTIL //
+
+static bool CheckField(string[] input, out int visitNumber)
+{
     (int row, int col) coords = GetStartPos(input);
     bool[,] visits = InitVisits(input);
     (int row, int col) direction = (-1, 0);
+    List<((int row, int col) coords, (int row, int col) direction)> visitedCorners = new();
     bool needTurn;
 
     visits[coords.row, coords.col] = true;
@@ -64,23 +106,34 @@ static int Star1(string[] input)
             }
             else
             {
+                visitedCorners.Add((coords, direction));
                 direction = Turn(direction);
+
+                if (CheckIfExisting(visitedCorners, coords, direction))
+                {
+                    visitNumber = CountVisits(visits);
+                    return false;
+                }
             }
 
-            Console.WriteLine(coords);
             visits[coords.row, coords.col] = true;
         }
     } while (!outOfBounds);
 
-    return CountVisits(visits);
+    visitNumber = CountVisits(visits);
+
+    return true;
 }
 
-static int Star2(string[] input)
+static bool CheckIfExisting(List<((int row, int col) coords, (int row, int col) direction)> visitedCorners, (int row, int col) coords, (int row, int col) direction)
 {
-    return 0;
-}
+    foreach (var corner in visitedCorners)
+    {
+        if (corner.direction == direction && corner.coords == coords) return true;
+    }
 
-// UTIL //
+    return false;
+}
 
 static (int row, int col) Turn((int row, int col) coords)
 {
