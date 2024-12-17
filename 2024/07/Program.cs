@@ -2,7 +2,7 @@
 
 // CONFIG //
 
-const Copy COPY = Copy.STAR_ONE;
+const Copy COPY = Copy.STAR_TWO;
 const string FILE = "../../../input.txt";
 
 // CHECK & READ FILE INPUTS //
@@ -40,13 +40,25 @@ switch (COPY)
 
 static long Star1(string[] input)
 {
+    return GetSumOfCorrectLines(input, false);
+}
+
+static long Star2(string[] input)
+{
+    return GetSumOfCorrectLines(input, true);
+}
+
+// UTIL //
+
+static long GetSumOfCorrectLines(string[] lines, bool starTwo)
+{
     long sum = 0;
 
-    foreach (var line in input)
+    foreach (var line in lines)
     {
         (long result, int[] terms) calc = ProcessLine(line);
 
-        if (CheckIfCorrect(calc))
+        if (CheckIfCorrect(calc, starTwo))
         {
             sum += calc.result;
         }
@@ -54,13 +66,6 @@ static long Star1(string[] input)
 
     return sum;
 }
-
-static long Star2(string[] input)
-{
-    return 0;
-}
-
-// UTIL //
 
 static (long result, int[] terms) ProcessLine(string input)
 {
@@ -73,19 +78,19 @@ static (long result, int[] terms) ProcessLine(string input)
     return calc;
 }
 
-static bool CheckIfCorrect((long result, int[] terms) calc)
+static bool CheckIfCorrect((long result, int[] terms) calc, bool concatOp)
 {
     long[] currentArr = { calc.terms[0] };
 
     for (int i = 1; i < calc.terms.Length; i++)
     {
-        currentArr = AddOptions(currentArr, calc.terms[i]);
+        currentArr = AddOptions(currentArr, calc.terms[i], concatOp);
     }
 
     return currentArr.Contains(calc.result);
 }
 
-static long[] AddOptions(long[] options, int term)
+static long[] AddOptions(long[] options, int term, bool concatOp)
 {
     List<long> newOptions = new List<long>();
 
@@ -93,6 +98,11 @@ static long[] AddOptions(long[] options, int term)
     {
         newOptions.Add(option * term);
         newOptions.Add(option + term);
+
+        if (concatOp)
+        {
+            newOptions.Add(long.Parse($"{option}{term}"));
+        }
     }
 
     return newOptions.ToArray();
