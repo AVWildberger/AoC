@@ -4,7 +4,7 @@ using TextCopy; //Using NuGet Package TextCopy (https://github.com/CopyText/Text
 
 // CONFIG //
 
-const Copy COPY = Copy.STAR_ONE;
+const Copy COPY = Copy.STAR_TWO;
 const string FILE = "../../../input.txt";
 
 // CHECK & READ FILE INPUTS //
@@ -43,24 +43,7 @@ switch (COPY)
 static int Star1(string[] input)
 {
     char[][] field = input.Select(x => x.ToCharArray()).ToArray();
-
-    Dictionary<char, List<(int row, int col)>> symbolCoords = new();
-
-    for (int row = 0; row < field.Length; row++)
-    {
-        for (int col = 0; col < field[row].Length; col++)
-        {
-            if (field[row][col] != '.' && !symbolCoords.ContainsKey(field[row][col]))
-            {
-                symbolCoords[field[row][col]] = new();
-            }
-
-            if (field[row][col] != '.')
-            {
-                symbolCoords[field[row][col]].Add((row, col));
-            }
-        }
-    }
+    Dictionary<char, List<(int row, int col)>> symbolCoords = GetAllAntennaCoords(field);
 
     HashSet<(int row, int col)> locations = new();
 
@@ -89,10 +72,65 @@ static int Star1(string[] input)
 
 static int Star2(string[] input)
 {
-    return 0;
+    char[][] field = input.Select(x => x.ToCharArray()).ToArray();
+    Dictionary<char, List<(int row, int col)>> symbolCoords = GetAllAntennaCoords(field);
+
+    HashSet<(int row, int col)> locations = new();
+
+    foreach (var list in symbolCoords.Values)
+    {
+        foreach (var e1 in list)
+        {
+            foreach (var e2 in list)
+            {
+                if (e1 != e2)
+                {
+                    locations.Add(e1);
+
+                    (int row, int col) difference = (e2.row - e1.row, e2.col - e1.col);
+                    (int row, int col) newCoords = (e2.row + difference.row, e2.col + difference.col);
+
+                    while (newCoords.row >= 0 && newCoords.row < field.Length && newCoords.col >= 0 && newCoords.col < field[0].Length)
+                    {
+                        if (!locations.Contains(newCoords))
+                        {
+                            locations.Add(newCoords);
+                        }
+
+                        newCoords = (newCoords.row + difference.row, newCoords.col + difference.col);
+                    }
+                }
+            }
+        }
+    }
+
+    return locations.Count;
 }
 
 // UTIL //
+
+static Dictionary<char, List<(int row, int col)>> GetAllAntennaCoords(char[][] field)
+{
+    Dictionary<char, List<(int row, int col)>> symbolCoords = new();
+    
+    for (int row = 0; row < field.Length; row++)
+    {
+        for (int col = 0; col < field[row].Length; col++)
+        {
+            if (field[row][col] != '.' && !symbolCoords.ContainsKey(field[row][col]))
+            {
+                symbolCoords[field[row][col]] = new();
+            }
+
+            if (field[row][col] != '.')
+            {
+                symbolCoords[field[row][col]].Add((row, col));
+            }
+        }
+    }
+
+    return symbolCoords;
+}
 
 enum Copy
 {
