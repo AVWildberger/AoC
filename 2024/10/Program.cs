@@ -19,7 +19,7 @@ var input = File.ReadAllLines(FILE);
 
 // MAIN LOGIC //
 
-long star1 = Star1(input);
+int star1 = Star1(input);
 int star2 = Star2(input);
 
 // PRINT (& COPY) RESULTS //
@@ -39,7 +39,19 @@ switch (COPY)
 
 // STARS //
 
-static long Star1(string[] input)
+static int Star1(string[] input)
+{
+    return GetAnswerToStar(input, true);
+}
+
+static int Star2(string[] input)
+{
+    return GetAnswerToStar(input, false);
+}
+
+// UTIL //
+
+static int GetAnswerToStar(string[] input, bool star1)
 {
     int[][] field = CreateField(input);
     (int row, int col)[] trailheadCoordsArr = GetTrailheadCoords(field);
@@ -57,20 +69,13 @@ static long Star1(string[] input)
     foreach (var coords in trailheadCoordsArr)
     {
         List<(int, int)> knownCoords = new();
-        possibilities += FindDirection(field, coords, ref knownCoords);
+        possibilities += FindDirection(field, coords, ref knownCoords, star1);
     }
 
     return possibilities;
 }
 
-static int Star2(string[] input)
-{
-    return 0;
-}
-
-// UTIL //
-
-static int FindDirection(int[][] field, (int row, int col) coords, ref List<(int, int)> knownCoords, int number = 1)
+static int FindDirection(int[][] field, (int row, int col) coords, ref List<(int, int)> knownCoords, bool star1 = true, int number = 1)
 {
     int foundSolutions = 0;
 
@@ -86,26 +91,59 @@ static int FindDirection(int[][] field, (int row, int col) coords, ref List<(int
     {
         (int row, int col) newCoords = (coords.row + vector.row, coords.col + vector.col);
 
-        if (newCoords.row >= 0 &&
-            newCoords.row < field.Length &&
-            newCoords.col >= 0 &&
-            newCoords.col < field[0].Length &&
-            field[newCoords.row][newCoords.col] == number &&
-            !knownCoords.Contains(newCoords))
+        if (star1)
         {
-            if (number == 9)
-            {
-                foundSolutions++;
-                knownCoords.Add(newCoords);
-            }
-            else
-            {
-                foundSolutions += FindDirection(field, newCoords, ref knownCoords, number+1);
-            }
+            CheckFieldStar1(field, ref knownCoords, number, ref foundSolutions, newCoords);
         }
+        else
+        {
+            CheckFieldStar2(field, ref knownCoords, number, ref foundSolutions, newCoords);
+        }
+        
     }
 
     return foundSolutions;
+
+}
+
+static void CheckFieldStar1(int[][] field, ref List<(int, int)> knownCoords, int number, ref int foundSolutions, (int row, int col) newCoords)
+{
+    if (newCoords.row >= 0 &&
+                newCoords.row < field.Length &&
+                newCoords.col >= 0 &&
+                newCoords.col < field[0].Length &&
+                field[newCoords.row][newCoords.col] == number &&
+                !knownCoords.Contains(newCoords))
+    {
+        if (number == 9)
+        {
+            foundSolutions++;
+            knownCoords.Add(newCoords);
+        }
+        else
+        {
+            foundSolutions += FindDirection(field, newCoords, ref knownCoords, true, number + 1);
+        }
+    }
+}
+
+static void CheckFieldStar2(int[][] field, ref List<(int, int)> knownCoords, int number, ref int foundSolutions, (int row, int col) newCoords)
+{
+    if (newCoords.row >= 0 &&
+                newCoords.row < field.Length &&
+                newCoords.col >= 0 &&
+                newCoords.col < field[0].Length &&
+                field[newCoords.row][newCoords.col] == number)
+    {
+        if (number == 9)
+        {
+            foundSolutions++;
+        }
+        else
+        {
+            foundSolutions += FindDirection(field, newCoords, ref knownCoords, false, number + 1);
+        }
+    }
 }
 
 static int[][] CreateField(string[] input)
